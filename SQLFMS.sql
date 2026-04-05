@@ -1,42 +1,86 @@
-create database FMS;
 
-use FMS;
-
-CREATE TABLE empresa (
-    id_empresa INT AUTO_INCREMENT PRIMARY KEY,
-    razao_social VARCHAR(150),
-    cnpj VARCHAR(14) UNIQUE
+CREATE TABLE Empresa (
+    idEmpresa INT AUTO_INCREMENT PRIMARY KEY,
+    cnpj CHAR(14),
+    razao_social VARCHAR(100),
+    nome_fantasia VARCHAR(100),
+    status VARCHAR(45)
 );
 
-CREATE TABLE usuario (
-    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(150),
-    email VARCHAR(150),
+
+
+CREATE TABLE Usuario (
+    idUsuario INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100),
+    email VARCHAR(100),
     senha_hash VARCHAR(255),
-    fk_empresa INT,
-    fk_usuario INT,
-    FOREIGN KEY (fk_empresa) REFERENCES empresa(id_empresa),
-    FOREIGN KEY (fk_usuario) REFERENCES usuario(id_usuario)
+    cargo VARCHAR(100),
+    fkEmpresa INT,
+    fkUsuario INT,
+    FOREIGN KEY (fkEmpresa) REFERENCES Empresa(idEmpresa),
+    FOREIGN KEY (fkUsuario) REFERENCES Usuario(idUsuario)
 );
 
-CREATE TABLE bloco (
-    id_bloco INT AUTO_INCREMENT PRIMARY KEY,
-    fk_empresa INT,
-    nome_ambiente VARCHAR(50),
-    FOREIGN KEY (fk_empresa) REFERENCES empresa(id_empresa)
+
+CREATE TABLE Endereco (
+    idEndereco INT AUTO_INCREMENT PRIMARY KEY,
+    cep CHAR(8),
+    logradouro VARCHAR(100),
+    numero VARCHAR(10),
+    bairro VARCHAR(100),
+    fkEmpresa INT,
+    FOREIGN KEY (fkEmpresa) REFERENCES Empresa(idEmpresa)
 );
 
-CREATE TABLE sensor (
-    id_sensor INT AUTO_INCREMENT PRIMARY KEY,
-    fk_bloco INT,
+
+CREATE TABLE TipoTelefone (
+    idTipoTelefone INT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(45)
+);
+
+
+CREATE TABLE EmpresaTelefone (
+    fkEmpresa INT,
+    fkTipoTelefone INT,
+    PRIMARY KEY (fkEmpresa, fkTipoTelefone),
+    FOREIGN KEY (fkEmpresa) REFERENCES Empresa(idEmpresa),
+    FOREIGN KEY (fkTipoTelefone) REFERENCES TipoTelefone(idTipoTelefone)
+);
+
+
+CREATE TABLE Cliente (
+    idCliente INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100),
+    email VARCHAR(100),
+    cpf CHAR(11),
+    fkEmpresa INT,
+    FOREIGN KEY (fkEmpresa) REFERENCES Empresa(idEmpresa)
+);
+
+
+CREATE TABLE Blocos (
+    idBloco INT AUTO_INCREMENT PRIMARY KEY,
+    numeracao VARCHAR(50),
+    fkEmpresa INT,
+    FOREIGN KEY (fkEmpresa) REFERENCES Empresa(idEmpresa)
+);
+
+
+CREATE TABLE Sensor (
+    idSensor INT AUTO_INCREMENT PRIMARY KEY,
+    data_instalacao DATETIME,
+    data_manutencao DATETIME,
     status VARCHAR(20),
-    FOREIGN KEY (fk_bloco) REFERENCES bloco(id_bloco)
+    fkBloco INT,
+    FOREIGN KEY (fkBloco) REFERENCES Blocos(idBloco)
 );
 
-CREATE TABLE leitura (
-    id_leitura INT AUTO_INCREMENT PRIMARY KEY,
-    fk_sensor INT,
-    data DATETIME DEFAULT CURRENT_TIMESTAMP,
-    leitura TINYINT(1),
-    FOREIGN KEY (fk_sensor) REFERENCES sensor(id_sensor)
+
+CREATE TABLE Leitores (
+    idLeitura INT AUTO_INCREMENT PRIMARY KEY,
+    data DATETIME,
+    leitura TINYINT,
+    fkSensor INT,
+    tipo_leitura VARCHAR(45),
+    FOREIGN KEY (fkSensor) REFERENCES Sensor(idSensor)
 );
